@@ -3,21 +3,21 @@ package org.example;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.Bucket;
-import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.SequencedCollection;
 
 public class Main {
     public static void main(String[] args) {
         Properties props = new Properties();
+        List<Bucket> allBuckets;
 
         try {
             String configFilePath = "config.properties";
@@ -29,30 +29,49 @@ public class Main {
 
         System.out.println(props.getProperty("accessKey"));
 
-        AwsCredentials credentials = AwsBasicCredentials.create(props.getProperty("accessKey"), props.getProperty("secretKey"));
+        AwsCredentials credentials = AwsBasicCredentials.create(
+                props.getProperty("accessKey"),
+                props.getProperty("secretKey"));
 
-        String region = "us-west-2";
+        String region = "us-east-1";
         S3Client s3 = S3Client.builder()
                 .region(Region.of(region))
                 .credentialsProvider(StaticCredentialsProvider.create(credentials))
                 .build();
 
-        System.out.println(listBuckets(s3));
+        allBuckets = listBuckets(s3);
+
+
+
+
+        PutObjectResponse uploadResponse = uploadFileAsync(allBuckets.getFirst().name(), "src/main/resources/IMG_0661.jpg", "carInfo", s3);
+
+        System.out.println("Uploaded file: " + uploadResponse);
     }
 
-    private static SequencedCollection<Bucket> listBuckets(S3Client s3Client) {
-        List<Bucket> allBuckets = new ArrayList<>();
-        String nextToken = null;
+    private static List<Bucket> listBuckets(S3Client s3Client) {
+        
+        try {
+            ListBucketsResponse response = s3Client.listBuckets();
+            List<Bucket> allBuckets = response.buckets();
 
-        do {
-            String continuationToken = nextToken;
-            ListBucketsResponse listBucketsResponse = s3Client.listBuckets(
-                    request -> request.continuationToken(continuationToken)
-            );
+            allBuckets.forEach(bucket -> {
+                System.out.println("Bucket: " + bucket.name()); 
+            });
+            return allBuckets;
+        } catch (S3Exception e) {
+            System.err.println(e.awsErrorDetails().errorMessage());
+            System.exit(1);
+            return null;
+        }
+    }
 
-            allBuckets.addAll(listBucketsResponse.buckets());
-            nextToken = listBucketsResponse.continuationToken();
-        } while (nextToken != null);
-        return allBuckets;
+    private static PutObjectResponse uploadFileAsync(String bucketName, String objectPath, String key, S3Client s3Client) {
+        PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build();
+
+        return s3Client.putObject(request, RequestBody.fromString(objectPath));
     }
 }
