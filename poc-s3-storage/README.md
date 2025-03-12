@@ -128,3 +128,22 @@ AWS S3 has 6 pricing components:
 - S3 uses REST APIs to exchange information between applications
 
 ![S3 Architecture](./assets/s3-architecture.png)
+
+### S3 Intelligent Tiering Storage Class
+
+- Moves data to the most cost-efficient access tier based on access frequency
+
+![Intelligent Tiering](./assets/intelligent-tiering.jpg)
+
+### S3 Lifecycle
+
+- Automate transfer data to different storage class without changes to application
+- Transition actions - define when objects transition from one storage class to another
+- Expiration actions - define when objects expire and Amazon can delete
+
+## STORAGE CLASSES
+
+- S3 mantains durability by copying an object across multiple Availability Zones (AZ) within a single AWS Region
+- 99.999999999% (eleven nines) of durability
+- Minimum of 3 AZs in a region for one data
+- Each AZ is separated by a min of 1km and max 100km to avoid natural disaster to kill all data

@@ -41,12 +41,11 @@ public class Main {
 
         allBuckets = listBuckets(s3);
 
+        listObjects(s3, allBuckets.getFirst().name());
 
 
-
-        PutObjectResponse uploadResponse = uploadFileAsync(allBuckets.getFirst().name(), "src/main/resources/IMG_0661.jpg", "carInfo", s3);
-
-        System.out.println("Uploaded file: " + uploadResponse);
+        // PutObjectResponse uploadResponse = uploadFileAsync(allBuckets.getFirst().name(), "src/main/resources/IMG_0661.jpg", "carInfo", s3);
+        // System.out.println("Uploaded file: " + uploadResponse);
     }
 
     private static List<Bucket> listBuckets(S3Client s3Client) {
@@ -73,5 +72,15 @@ public class Main {
                 .build();
 
         return s3Client.putObject(request, RequestBody.fromString(objectPath));
+    }
+
+    private static void listObjects(S3Client s3Client, String bucketName) {
+        ListObjectsV2Request listObjectsV2Request = ListObjectsV2Request.builder()
+                .bucket(bucketName)
+                .build();
+        ListObjectsV2Response listObjectsV2Response = s3Client.listObjectsV2(listObjectsV2Request);
+        List<S3Object> objects = listObjectsV2Response.contents();
+
+        objects.stream().forEach(System.out::println);
     }
 }
