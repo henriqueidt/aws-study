@@ -147,3 +147,99 @@ AWS S3 has 6 pricing components:
 - 99.999999999% (eleven nines) of durability
 - Minimum of 3 AZs in a region for one data
 - Each AZ is separated by a min of 1km and max 100km to avoid natural disaster to kill all data
+
+### Amazon S3 Standard (general purpose)
+
+- Default assigned class for objects if not specified
+- Best suitable for frequently accessed data
+- Resilient in the event of one entire Availability Zone destruction
+- Low latency
+- No minimum duration
+- No minimum size
+- No retrieval fees
+
+|         Tier         | Amount stored |     Price     |
+| :------------------: | :-----------: | :-----------: |
+| Frequent Access Tier |  Up to 50 TB  | $0.023 per GB |
+| Frequent Access Tier | 50+ to 450 TB | $0.022 per GB |
+| Frequent Access Tier |  Over 500 TB  | $0.021 per GB |
+
+### Amazon S3 Standard-Infrequent Access (S3 Standard-IA)
+
+- Not frequently accessed, but still requires rapid access when needed
+- Stores objects redundantly across multiple Availability Zones
+- Minimum size of 128 KB (if less than that is stored, the 128K KB fee will be charged)
+- Minimum duration of 30 days (if stored for less than that, it will be charged for 30 days)
+- Same low latency and performanse of S3 Standard
+- Resilient in the event of one entire Availability Zone destruction
+
+### Amazon S3 One Zone-Infrequent Access (S3 One Zone-IA)
+
+- Not frequently accessed, but still requires rapid access when needed
+- Stores the data in only one Availability Zone (risk of data loss if a natural disaster occurs)
+- Costs 20% less than S3 Standard-IA
+- All other characteristics of S3 Standard-IA
+
+| Storage class  |         Tier          |         Amount Stored         |     Price      |
+| :------------: | :-------------------: | :---------------------------: | :------------: |
+| S3 Standard-IA | Infrequently accessed | Total amount of storage/month | $0.0125 per GB |
+| S3 One Zone-IA | Infrequently accessed | Total amount of storage/month |  $0.01 per GB  |
+
+### Amazon S3 Intelligent-Tiering
+
+- Optimizes costs by automatically moving data to the most cost-efficient access tier
+- Best suitable for unknown or changing access patterns
+- Monthly object monitoring and automation fee
+- Best suitable for data lakes, big data and media applications
+- Objects with less than 128 KB will always go to **Frequent Access Tier**
+- Objects uploaded automatically go to **Frequent Access Tier**
+- Objects not accessed for 30 days go to **Infrequent Access Tier**
+- Objects not accessed for 90 days go to **Archive Access Tier** (needs to be activated)
+- Objects not accessed for 180 days go to **Deep Archive Access Tier** (needs to be activated)
+- Objects accesed afterwards will be moved automatically back to the **Frequent Access Tier**
+
+![Intelligent Tiering 2](./assets/intelligent-tiering-2.png)
+
+|           Tier           |    Amount stored    |      Price      |
+| :----------------------: | :-----------------: | :-------------: |
+|   Frequent Access Tier   |  First 50 TB/month  |  $0.023 per GB  |
+|   Frequent Access Tier   |  Next 450 TB/month  |  $0.022 per GB  |
+|   Frequent Access Tier   |  Over 500 TB/month  |  $0.021 per GB  |
+|  Infrequent Access Tier  | All Storage / Month | $0.0125 per GB  |
+|   Archive Access Tier    | All Storage / Month |  $0.004 per GB  |
+| Deep Archive Access Tier | All Storage / Month | $0.00099 per GB |
+
+### Amazon S3 Glacier Instant Retrieval
+
+- Lowest cost for long-lived rarely accessed data with milliseconds retrieval
+- Redundantly stores data across multiple phisically separated AWS AZs
+- Instant access like S3 Standard
+- Minimum duration of 90 days (if stored for less than that, it will be charged for 90 days)
+- Minimum size of 128 KB (if less than that is stored, the 128 KB fee will be charged)
+
+### Amazon S3 Glacier Flexible Retrieval (S3 Glacier)
+
+- Best suitable for data accessed 1-2 times a year
+- Configurable Retrieval times from minutes to hours
+  - Expedited (1–5 mins)
+  - Standard (3–5 hours)
+  - Bulk (5-12 hours)
+- Minimum duration of 90 days (if stored for less than that, an early deletion fee will be charged)
+- Minimum size of 40 KB (if less than that is stored, the 40 KB fee will be charged)
+
+### Amazon S3 Glacier Deep Archive (S3 Glacier Deep Archive)
+
+- Lowest cost storage in AWS S3
+- Best suitable for data accessed 1-2 times a year
+- Designed for long-term retation of data 7-10 years
+- Retrieval time is within 12 hours
+- Minimum duration of 180 days (if stored for less than that, it will be charged for 180 days)
+- Minimum size of 40 KB (if less than that is stored, the 40 KB fee will be charged)
+
+|         Storage class         |                                                Storage Class                                                 |         Amount stored         |      Price      |
+| :---------------------------: | :----------------------------------------------------------------------------------------------------------: | :---------------------------: | :-------------: |
+| S3 Glacier Instant Retrieval  |          For long-lived archive data accessed once a quarter with instant retrieval in milliseconds          | Total amount of storage/month |  $0.004 per GB  |
+| S3 Glacier Flexible Retrieval |              For long-term backups and archives with retrieval option from 1 minute to 12 hours              | Total amount of storage/month | $0.0036 per GB  |
+|    S3 Glacier Deep Archive    | For long-term data archiving that is accessed once or twice in a year and can be restored within 12-48 hours | Total amount of storage/month | $0.00099 per GB |
+
+![Classes Comparison](./assets/s3-classes-comparison.jpg)
